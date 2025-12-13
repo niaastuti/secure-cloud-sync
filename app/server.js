@@ -6,6 +6,7 @@ const uploadRoutes = require('../routes/upload');
 const downloadRoutes = require('../routes/download');
 const updateRoutes = require('../routes/update');
 const versionRoutes = require('../routes/versions');
+const listRoutes = require('../routes/list');
 
 // Middleware
 app.use(express.json());
@@ -15,6 +16,7 @@ app.use('/upload', uploadRoutes);
 app.use('/download', downloadRoutes);
 app.use('/update', updateRoutes);
 app.use('/versions', versionRoutes);
+app.use('/files', listRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {
