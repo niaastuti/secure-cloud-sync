@@ -1,0 +1,63 @@
+{
+  "info": {
+    "name": "Secure Cloud Sync - Week 1",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Baseline API testing for Secure Cloud Sync (upload, download, update, versions)"
+  },
+  "item": [
+    {
+      "name": "Upload File",
+      "request": {
+        "method": "POST",
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": ""
+            }
+          ]
+        },
+        "url": "http://localhost:3000/upload"
+      }
+    },
+    {
+      "name": "Download File",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/download/{{fileId}}"
+      }
+    },
+    {
+      "name": "Update File",
+      "request": {
+        "method": "POST",
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": ""
+            }
+          ]
+        },
+        "url": "http://localhost:3000/update/{{fileId}}"
+      }
+    },
+    {
+      "name": "Get Versions",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/versions/{{fileId}}"
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "fileId",
+      "value": ""
+    }
+  ]
+}
