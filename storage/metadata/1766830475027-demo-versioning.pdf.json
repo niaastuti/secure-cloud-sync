@@ -1,0 +1,19 @@
+{
+  "file_id": "1766830475027-demo-versioning.pdf",
+  "filename": "1766830475027-demo-versioning.pdf.bin",
+  "original_name": "demo-versioning.pdf",
+  "version": 2,
+  "timestamp": "2025-12-27T10:15:11.373Z",
+  "rsa_wrapped_key": "dv5Ij3Ifp09M+DAFskHTjJSJ/vWmujmJhjWoQqK2htpmfkED5PM2FsjZEghOoKIsx+v0ha+kedeg6a5s6y+8FgdIJ9DgwEQqmY1qgH5RXMDC7eaXh6iz8vxym+q5z40/0E7GZ1VSzo00SNIS9rAqox0gEjGjfPn57iyXvatv7FQEmIeGr98BfgQ/6FBwQJE6eY7zZ5NES6ovTXRDfc065Fp6z/gjstFZWPoe9YKeUC7n23FzV1HYsfbdfcHfs4MY4pdT7EtV2n+LV1oqm2gfwQzRVyS7VFkALq4x73bT8W5IC5NSzlE1Sx/g0zbfLfQ5kJiCGHCbca6lQ8bLcS5qOQ==",
+  "aes_iv": "vMb7qsqhy5/8eJCB",
+  "aes_tag": "yAarfMqBbrzgsaSrTMWhlA==",
+  "file_hash": "dd82742df6d76ac111df93eabddcfc1c1868d5ddd504ee4a28849887581a30f5",
+  "last_modified": "2025-12-27T10:15:11.373Z",
+  "last_synced_version": 2,
+  "previous_versions": [
+    {
+      "version": 1,
+      "timestamp": "2025-12-27T10:14:35.083Z"
+    }
+  ]
+}

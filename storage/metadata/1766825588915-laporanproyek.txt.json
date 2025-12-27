@@ -1,0 +1,23 @@
+{
+  "file_id": "1766825588915-laporanproyek.txt",
+  "filename": "1766825588915-laporanproyek.txt.bin",
+  "original_name": "laporanproyek.txt",
+  "version": 3,
+  "timestamp": "2025-12-27T08:55:23.451Z",
+  "rsa_wrapped_key": "Gw8rtt9/iQgMml4+9m1tIRkawCZlrhi2mT0tQFR4t7KEH+H+99ubx2wpsBz6uEDum/GDdA6vMlQ+1NdmLag5aNZfxz8qrD31SkNOyM9NBJ6rYJJ+h6BA5YqKd1HaZtVfE6EZlD9rC7FgxIVbkyOypqIGHWkXIJIJ2vsnMUQoH4NNHYaKi3Fi8U82fraD0Y8LvguFHQawfpWyxhYeJBPgNXDzYA0xvOc8xTQUXQhUi/zJfqFBefZsjmXIKNLYBFO/kHJ5crkNvaldWcn0AoevF2lsr4Jbw4Rx+ueVEcUstde2GFhFvXd5qOAPhbKfRRmkLetL2h5urAJo1vDArdbBCA==",
+  "aes_iv": "BQ6E5ualEsavZmbn",
+  "aes_tag": "WCBkQsi7BDvtNM8qSYvUXw==",
+  "file_hash": "e3d6e5b257e7d2c0d32a82b1b6d5b2283129b3e76975d7b200b8db167d896d4d",
+  "last_modified": "2025-12-27T08:55:23.451Z",
+  "last_synced_version": 3,
+  "previous_versions": [
+    {
+      "version": 1,
+      "timestamp": "2025-12-27T08:53:08.952Z"
+    },
+    {
+      "version": 2,
+      "timestamp": "2025-12-27T08:54:27.328Z"
+    }
+  ]
+}

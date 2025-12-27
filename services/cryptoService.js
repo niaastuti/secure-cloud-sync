@@ -71,6 +71,17 @@ function rsaUnwrapKey(wrappedKeyBuffer) {
   );
 }
 
+// 3) SHA-256 hash untuk integritas dan sync comparison
+function computeSHA256(buffer) {
+  return crypto.createHash('sha256').update(buffer).digest('hex');
+}
+
+// 4) Utility untuk generate file hash dari path (opsional)
+function computeFileHash(filePath) {
+  const fileBuffer = fs.readFileSync(filePath);
+  return computeSHA256(fileBuffer);
+}
+
 module.exports = {
   generateAes256Key,
   generateIv12,
@@ -78,4 +89,5 @@ module.exports = {
   aesGcmDecrypt,
   rsaWrapKey,
   rsaUnwrapKey,
+  computeSHA256, 
 };

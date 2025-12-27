@@ -1,0 +1,7 @@
+# LAPORAN PROYEK KEAMANAN KOMPUTER
+Judul: Secure Cloud Sync dengan Hybrid Cryptography
+Anggota: Kelompok 2
+Minggu: 3 - Fitur Sinkronisasi
+Progress: Implementasi hash SHA-256 dan endpoint sync
+Status: Testing berhasil dengan auto-versioning
+Hash: SHA-256 untuk integritas file

@@ -13,7 +13,8 @@ const {
   generateAes256Key,
   generateIv12,
   aesGcmEncrypt,
-  rsaWrapKey
+  rsaWrapKey,
+  computeSHA256  // ← BARU: import fungsi hash
 } = require("../services/cryptoService");
 
 const CIPHER_DIR = path.join(__dirname, "..", "storage", "cipher");
@@ -32,6 +33,10 @@ router.post("/", upload.single("file"), (req, res) => {
 
     const plainBuffer = req.file.buffer;
 
+    // ======== TAMBAHAN WEEK 3: Hitung hash dari plaintext ========
+    const fileHash = computeSHA256(plainBuffer);
+    // ============================================================
+
     // AES-256-GCM
     const aesKey = generateAes256Key();
     const iv = generateIv12(); // 12 bytes
@@ -46,7 +51,7 @@ router.post("/", upload.single("file"), (req, res) => {
     const cipherPath = path.join(CIPHER_DIR, cipherFileName);
     fs.writeFileSync(cipherPath, ciphertext);
 
-    // simpan metadata
+    // simpan metadata (TAMBAH FIELD SYNC)
     const meta = {
       id: fileId,
       originalName: req.file.originalname,
@@ -57,7 +62,16 @@ router.post("/", upload.single("file"), (req, res) => {
       tagB64: tag.toString("base64"),
       wrappedKeyB64: wrappedKey.toString("base64"),
       uploadedAt: new Date().toISOString(),
-      version: 1
+      version: 1,
+      // ======== FIELD BARU UNTUK SYNC WEEK 3 ========
+      file_hash: fileHash,                    // Hash SHA-256 plaintext
+      last_modified: new Date().toISOString(), // Timestamp terakhir modifikasi
+      last_synced_version: 1,                 // Versi terakhir yang disinkronkan
+      sync_metadata: {                        // Optional: grouping field sync
+        hash_algorithm: "SHA-256",
+        hash_value: fileHash
+      }
+      // ==============================================
     };
 
     fs.writeFileSync(
@@ -68,7 +82,11 @@ router.post("/", upload.single("file"), (req, res) => {
     return res.json({
       message: "File uploaded & encrypted successfully",
       fileId,
-      info: { version: 1 }
+      info: { 
+        version: 1,
+        file_hash: fileHash,      // ← Kirim juga hash di response
+        last_modified: meta.last_modified
+      }
     });
   } catch (e) {
     console.error(e);

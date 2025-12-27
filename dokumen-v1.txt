@@ -1,0 +1,4 @@
+# LAPORAN PROYEK KEAMANAN KOMPUTER
+Judul: Secure Cloud Sync dengan Hybrid Cryptography
+Anggota: Kelompok 2
+Minggu: 3 - Fitur Sinkronisasi
