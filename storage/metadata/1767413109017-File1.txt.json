@@ -1,0 +1,21 @@
+{
+  "file_id": "1767413109017-File1.txt",
+  "filename": "1767413109017-File1.txt.bin",
+  "original_name": "File1.txt",
+  "version": 2,
+  "timestamp": "2026-01-03T04:05:09.047Z",
+  "rsa_wrapped_key": "cDJZWUfssDhMfQ3kMC5j9k7N0SRBRmEZLcskKNkATuQOvzB2v/hkrpHlFzR14gTjBZHiEq3MJrFhygL6KcbVcu0vm4ArXSPN7lluEudOhWeVVvr/5FI7E0RwGvp2ORs29sfQ9U53byAshFtIMejgDrZdIao5ZpioXdF7aB3EXiExALU9Fw/pH/0ZZ/da1bmlY9jgsV/dA9VDdT+ePvdTwGVvGTOUqKc7aWCeUKW/PPkiTQANhEN7rJzgqaHPFoIoTzeOatYWUZb/0TRD86UQMcM2KQVHwvp8PyB3wd4lXX/3QPr/V0Pbn7NeLps24IICO7vFIdLmiJJZfS7X95mGqA==",
+  "aes_iv": "9xG2LXatH5WbCDBA",
+  "aes_tag": "JOlddfGsRkrCUWKFKV4jhQ==",
+  "file_hash": "acb6411f323ee170897f9cc7f1bedf2b0e8cf04e86712e0568b71d3803210f32",
+  "last_modified": "2026-01-03T04:19:58.355Z",
+  "last_synced_version": 1,
+  "previous_versions": [
+    {
+      "version": 1,
+      "timestamp": "2026-01-03T04:05:09.047Z",
+      "file_hash": "a2c75a8500d015006d7ce21b2729b04235add89f6d9f2b8ea49627411479e30b",
+      "archived_file": "1767413109017-File1.txt_v1.bin"
+    }
+  ]
+}

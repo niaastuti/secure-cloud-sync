@@ -4,33 +4,45 @@ const app = express();
 console.log('🔄 Loading sync routes...');
 try {
   const syncRoutes = require('../routes/sync');
-  console.log('✅ sync.js loaded successfully');
-  
+  const updateRoutes = require('../routes/update');
+  const versionsRoutes = require('../routes/versions');
+  const keysRoutes = require('../routes/keys');
+  const hybridRoutes = require('../routes/hybrid');
+
+  console.log('✅ Route modules loaded');
+
   app.use(express.json());
+
+  // Register Routes
   app.use('/sync', syncRoutes);
-  
-  console.log('✅ Sync routes registered:');
-  console.log('   POST /sync/check');
-  console.log('   POST /sync/upload');
-  console.log('   GET  /sync/download/:file_id');
-  
+  app.use('/update', updateRoutes);
+  app.use('/versions', versionsRoutes);
+  app.use('/keys', keysRoutes);
+  app.use('/hybrid', hybridRoutes);
+
+  console.log('✅ All routes registered:');
+  console.log('   /sync     (check, upload, download)');
+  console.log('   /update   (POST /:fileId)');
+  console.log('   /versions (GET /:fileId)');
+  console.log('   /keys     (POST /generate)');
+  console.log('   /hybrid   (POST /encrypt, POST /decrypt)');
+
 } catch (error) {
-  console.error('❌ ERROR loading sync routes:', error.message);
+  console.error('❌ ERROR loading routes:', error.message);
   console.error('Full error:', error);
-  process.exit(1); // Stop server jika error
+  process.exit(1);
 }
 
 app.get('/', (req, res) => {
-  res.json({ 
-    message: 'Secure Cloud Sync API - Week 3',
+  res.json({
+    message: 'Secure Cloud Sync API - Week 3 (Full Features)',
     status: 'Running',
     endpoints: {
-      root: 'GET /',
-      sync_check: 'POST /sync/check',
-      sync_upload: 'POST /sync/upload',
-      sync_download: 'GET /sync/download/:file_id',
-      regular_upload: 'POST /upload',
-      regular_download: 'GET /download/:id'
+      sync: '/sync',
+      update: '/update/:fileId',
+      versions: '/versions/:fileId',
+      keys: '/keys/generate',
+      hybrid: '/hybrid'
     }
   });
 });
@@ -38,5 +50,4 @@ app.get('/', (req, res) => {
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
-  console.log(`📁 Root endpoint: http://localhost:${PORT}/`);
 });
