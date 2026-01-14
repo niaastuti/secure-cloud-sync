@@ -3,6 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
+const { performance } = require('perf_hooks');
 const {
   computeSHA256,
   generateAes256Key,
@@ -19,7 +20,7 @@ const META_DIR = path.join(__dirname, '..', 'storage', 'metadata');
 router.post('/:fileId', upload.single('file'), (req, res) => {
   try {
     const { fileId } = req.params;
-    
+
     // 1. Cek keberadaan metadata lama
     const metaPath = path.join(META_DIR, `${fileId}.json`);
     if (!fs.existsSync(metaPath)) {
@@ -37,10 +38,14 @@ router.post('/:fileId', upload.single('file'), (req, res) => {
     const newFileHash = computeSHA256(plainBuffer);
 
     // 3. Encrypt New Content
+    const t0 = performance.now();
     const aesKey = generateAes256Key();
     const iv = generateIv12();
     const { ciphertext, tag } = aesGcmEncrypt(plainBuffer, aesKey, iv);
+    const t1 = performance.now();
+
     const wrappedKey = rsaWrapKey(aesKey);
+    const t2 = performance.now();
 
     // 4. Overwrite Cipher File (or separate if we want full history storage, 
     // but usually cloud sync overwrites "current" and logs version)
@@ -58,21 +63,21 @@ router.post('/:fileId', upload.single('file'), (req, res) => {
     // Let's stick to SIMPLE overwrite of physical file for now, but logical version increment.
     // WAIT, requirement B says "Mahasiswa harus menunjukkan 3 versi". If I overwrite, I can't download Version 1.
     // SO, I MUST RENAME/ARCHIVE the old file before overwriting.
-    
+
     // Archiving old version:
     if (fs.existsSync(path.join(CIPHER_DIR, oldMeta.filename))) {
-       const archiveName = `${oldMeta.file_id}_v${oldMeta.version}.bin`;
-       fs.copyFileSync(
-         path.join(CIPHER_DIR, oldMeta.filename), 
-         path.join(CIPHER_DIR, archiveName)
-       );
+      const archiveName = `${oldMeta.file_id}_v${oldMeta.version}.bin`;
+      fs.copyFileSync(
+        path.join(CIPHER_DIR, oldMeta.filename),
+        path.join(CIPHER_DIR, archiveName)
+      );
     }
-    
+
     fs.writeFileSync(path.join(CIPHER_DIR, oldMeta.filename), ciphertext);
 
     // 5. Update Metadata
     const newVersion = (oldMeta.version || 1) + 1;
-    
+
     // Store old version info (LIGHTWEIGHT) + REFERENCE to archived file if we wanted full restore.
     // For now, let's just log the metadata change.
     const historyEntry = {
@@ -103,7 +108,14 @@ router.post('/:fileId', upload.single('file'), (req, res) => {
       file_id: fileId,
       new_version: newVersion,
       file_hash: newFileHash,
-      previous_version_count: newMeta.previous_versions.length
+      file_hash: newFileHash,
+      previous_version_count: newMeta.previous_versions.length,
+      performance: {
+        aes_encrypt_ms: +(t1 - t0).toFixed(3),
+        rsa_wrap_ms: +(t2 - t1).toFixed(3),
+        total_process_ms: +(t2 - t0).toFixed(3),
+        ciphertext_size_bytes: ciphertext.length
+      }
     });
 
   } catch (error) {

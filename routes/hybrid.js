@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const crypto = require('crypto');
+const { performance } = require('perf_hooks');
 const {
     generateAes256Key,
     generateIv12,
@@ -20,12 +21,15 @@ router.post('/encrypt', (req, res) => {
         const buffer = Buffer.from(text, 'utf8');
 
         // 1. AES Encrypt
+        const t0 = performance.now();
         const aesKey = generateAes256Key();
         const iv = generateIv12();
         const { ciphertext, tag } = aesGcmEncrypt(buffer, aesKey, iv);
+        const t1 = performance.now();
 
         // 2. RSA Wrap Key
         const wrappedKey = rsaWrapKey(aesKey);
+        const t2 = performance.now();
 
         res.json({
             original_text: text,
@@ -33,7 +37,12 @@ router.post('/encrypt', (req, res) => {
             iv_hex: iv.toString('hex'),
             auth_tag_hex: tag.toString('hex'),
             rsa_wrapped_key_base64: wrappedKey.toString('base64'),
-            message: 'Hybrid Encryption Successful'
+            rsa_wrapped_key_base64: wrappedKey.toString('base64'),
+            message: 'Hybrid Encryption Successful',
+            performance: {
+                aes_encrypt_ms: +(t1 - t0).toFixed(3),
+                rsa_wrap_ms: +(t2 - t1).toFixed(3)
+            }
         });
 
     } catch (error) {
@@ -52,8 +61,10 @@ router.post('/decrypt', (req, res) => {
         }
 
         // 1. RSA Unwrap Key
+        const t0 = performance.now();
         const wrappedKey = Buffer.from(rsa_wrapped_key_base64, 'base64');
         const aesKey = rsaUnwrapKey(wrappedKey);
+        const t1 = performance.now();
 
         // 2. AES Decrypt
         const cipherBuffer = Buffer.from(ciphertext_hex, 'hex');
@@ -61,11 +72,16 @@ router.post('/decrypt', (req, res) => {
         const tag = Buffer.from(auth_tag_hex, 'hex');
 
         const plaintextBuffer = aesGcmDecrypt(cipherBuffer, aesKey, iv, tag);
+        const t2 = performance.now();
         const plaintext = plaintextBuffer.toString('utf8');
 
         res.json({
             decrypted_text: plaintext,
-            message: 'Hybrid Decryption Successful'
+            message: 'Hybrid Decryption Successful',
+            performance: {
+                rsa_unwrap_ms: +(t1 - t0).toFixed(3),
+                aes_decrypt_ms: +(t2 - t1).toFixed(3)
+            }
         });
 
     } catch (error) {

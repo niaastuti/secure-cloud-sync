@@ -4,6 +4,7 @@ const router = express.Router();
 const cryptoService = require('../services/cryptoService');
 const fs = require('fs');
 const path = require('path');
+const { performance } = require('perf_hooks');
 
 // Helper: baca metadata file
 function readMetadata(fileId) {
@@ -22,14 +23,14 @@ function writeMetadata(fileId, metadata) {
 router.post('/check', async (req, res) => {
   try {
     const { file_id, client_hash, client_version } = req.body;
-    
+
     // Validasi input
     if (!file_id) {
       return res.status(400).json({ error: 'file_id required' });
     }
-    
+
     const metadata = readMetadata(file_id);
-    
+
     // Jika file tidak ada di server
     if (!metadata) {
       return res.json({
@@ -38,14 +39,14 @@ router.post('/check', async (req, res) => {
         message: 'File not found on server, please upload first'
       });
     }
-    
+
     const serverHash = metadata.file_hash;
     const serverVersion = metadata.version || 1;
-    
+
     // Logika sync comparison
     const needsUpload = client_hash && client_hash !== serverHash;
     const needsDownload = client_version && client_version < serverVersion;
-    
+
     res.json({
       needs_upload: needsUpload,
       needs_download: needsDownload,
@@ -53,7 +54,7 @@ router.post('/check', async (req, res) => {
       server_hash: serverHash,
       last_modified: metadata.last_modified
     });
-    
+
   } catch (error) {
     console.error('Sync check error:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -69,27 +70,27 @@ router.post('/upload', upload.single('file'), async (req, res) => {
     // Debug log
     console.log('📦 Upload request - Body:', req.body);
     console.log('📦 Upload request - File:', req.file ? req.file.originalname : 'No file');
-    
+
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
     }
-    
+
     const { originalname, buffer } = req.file;
     const { file_id, originalname: customNameFromBody } = req.body;
-    
+
     // Tentukan nama yang akan dipakai (custom name dari form-data atau nama file)
     const finalOriginalName = customNameFromBody || originalname;
     console.log('📦 Using original name:', finalOriginalName);
-    
+
     // Generate hash dari file plaintext
     const fileHash = cryptoService.computeSHA256(buffer);
     console.log('📦 File hash:', fileHash.substring(0, 16) + '...');
-    
+
     // Jika file_id diberikan, cek apakah sudah ada
     let existingMetadata = null;
     let newVersion = 1;
     let actualFileId = file_id;
-    
+
     if (file_id) {
       existingMetadata = readMetadata(file_id);
       if (existingMetadata) {
@@ -102,17 +103,21 @@ router.post('/upload', upload.single('file'), async (req, res) => {
       actualFileId = `${Date.now()}-${finalOriginalName.replace(/\s+/g, '-')}`;
       console.log('📦 New file_id:', actualFileId);
     }
-    
+
     // Enkripsi file (sama seperti upload biasa)
+    const t0 = performance.now();
     const aesKey = cryptoService.generateAes256Key();
     const iv = cryptoService.generateIv12();
     const { ciphertext, tag } = cryptoService.aesGcmEncrypt(buffer, aesKey, iv);
+    const t1 = performance.now();
+
     const wrappedKey = cryptoService.rsaWrapKey(aesKey);
-    
+    const t2 = performance.now();
+
     // Simpan ciphertext
     const cipherPath = path.join(__dirname, '../storage/cipher', `${actualFileId}.bin`);
     fs.writeFileSync(cipherPath, ciphertext);
-    
+
     // Buat metadata baru
     const metadata = {
       file_id: actualFileId,
@@ -128,7 +133,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
       last_modified: new Date().toISOString(),
       last_synced_version: newVersion
     };
-    
+
     // Jika ada versi lama, simpan referensi
     if (existingMetadata) {
       metadata.previous_versions = [
@@ -139,19 +144,25 @@ router.post('/upload', upload.single('file'), async (req, res) => {
         }
       ];
     }
-    
+
     writeMetadata(actualFileId, metadata);
-    
+
     console.log('✅ File synced:', actualFileId, 'version', newVersion);
-    
+
     res.json({
       message: 'File synced successfully',
       file_id: actualFileId,
       version: newVersion,
       file_hash: fileHash,
-      sync_timestamp: metadata.last_modified
+      sync_timestamp: metadata.last_modified,
+      performance: {
+        aes_encrypt_ms: +(t1 - t0).toFixed(3),
+        rsa_wrap_ms: +(t2 - t1).toFixed(3),
+        total_process_ms: +(t2 - t0).toFixed(3),
+        ciphertext_size_bytes: ciphertext.length
+      }
     });
-    
+
   } catch (error) {
     console.error('❌ Sync upload error:', error);
     res.status(500).json({ error: 'Internal server error', detail: error.message });
@@ -163,15 +174,15 @@ router.get('/download/:file_id', (req, res) => {
   try {
     const { file_id } = req.params;
     const { version } = req.query; // Optional: download versi tertentu
-    
+
     const metadata = readMetadata(file_id);
     if (!metadata) {
       return res.status(404).json({ error: 'File not found' });
     }
-    
+
     // Simulasi konten berbeda per versi (UNTUK DEMO RESTORE VERSI)
     let finalContent = '';
-    
+
     // Versi 1: konten pendek
     if (version === '1') {
       finalContent = '# LAPORAN PROYEK KEAMANAN KOMPUTER\nJudul: Secure Cloud Sync dengan Hybrid Cryptography\nAnggota: Kelompok 2\nMinggu: 3 - Fitur Sinkronisasi';
@@ -187,20 +198,26 @@ router.get('/download/:file_id', (req, res) => {
       if (!fs.existsSync(cipherPath)) {
         return res.status(404).json({ error: 'Cipher file not found' });
       }
-      
+
       const ciphertext = fs.readFileSync(cipherPath);
+      const tDecStart = performance.now();
       const aesKey = cryptoService.rsaUnwrapKey(Buffer.from(metadata.rsa_wrapped_key, 'base64'));
+      const tDecMid = performance.now();
       const iv = Buffer.from(metadata.aes_iv, 'base64');
       const tag = Buffer.from(metadata.aes_tag, 'base64');
-      
+
       finalContent = cryptoService.aesGcmDecrypt(ciphertext, aesKey, iv, tag);
+      const tDecEnd = performance.now();
+
+      res.setHeader('X-Perf-RSA-Unwrap-Ms', (tDecMid - tDecStart).toFixed(3));
+      res.setHeader('X-Perf-Decrypt-Ms', (tDecEnd - tDecMid).toFixed(3));
     }
-    
+
     // Kirim file sebagai download
     res.setHeader('Content-Disposition', `attachment; filename="${metadata.original_name}"`);
     res.setHeader('Content-Type', 'application/octet-stream');
     res.send(finalContent);
-    
+
   } catch (error) {
     console.error('Sync download error:', error);
     res.status(500).json({ error: 'Internal server error' });

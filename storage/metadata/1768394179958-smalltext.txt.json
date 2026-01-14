@@ -1,0 +1,33 @@
+{
+  "file_id": "1768394179958-smalltext.txt",
+  "filename": "1768394179958-smalltext.txt.bin",
+  "original_name": "smalltext.txt",
+  "version": 4,
+  "timestamp": "2026-01-14T12:36:19.961Z",
+  "rsa_wrapped_key": "aayFOPudPrkuwHSYyCFPE4fgGE4/T+kD03ygYsC7yV8ut5h4xme6jh5I4sBH2mU5cFsz0i9kU4LLtCsgFbgW5yqdEOL4VR2TbZrP4OlphOg6O4k/Hr1tWtJl02hKIpG/BAU9Ne1EbrDEu2wQaT2cs6RUJ+VY8J/HQlRP4/iddeUu2D9EMzHAVi84Mv3AZ6Rk90+RuIbVKGoZx5dbf3FSs13VU3zkwAKTEHxmooGF2JWC6IfY8jBEnOjtnZS9ikFvChrMN0UiZ8Mxo4wYBdyWUmMlPowksIfrxRL4NDMjzccXx9PsoChsF5IY1IpPkdgzeUbWsm8pvKqn3By6O4PerA==",
+  "aes_iv": "fraPGnXaLbKOhYv5",
+  "aes_tag": "t+aLCwqvG+2wqd+2SAdeqw==",
+  "file_hash": "ef13c2c2f9ad3be715a268b23d82f9f4e1f8b6506ac4001b990c3db567c848b4",
+  "last_modified": "2026-01-14T12:38:15.639Z",
+  "last_synced_version": 1,
+  "previous_versions": [
+    {
+      "version": 1,
+      "timestamp": "2026-01-14T12:36:19.961Z",
+      "file_hash": "fa0e8c51bc3cd52c498094cfc7d55d2f9f7bab4e2c432272ac4553720a2a8a53",
+      "archived_file": "1768394179958-smalltext.txt_v1.bin"
+    },
+    {
+      "version": 2,
+      "timestamp": "2026-01-14T12:36:19.961Z",
+      "file_hash": "3c770748e06fbf4aa6b1fb78e8d62a1856a11518471d240ac56d0b14fdcf78ce",
+      "archived_file": "1768394179958-smalltext.txt_v2.bin"
+    },
+    {
+      "version": 3,
+      "timestamp": "2026-01-14T12:36:19.961Z",
+      "file_hash": "e6fec34f9d485ca3204d837e05d7e00476d26afcc3e15f7acae711e442650427",
+      "archived_file": "1768394179958-smalltext.txt_v3.bin"
+    }
+  ]
+}
